@@ -95,7 +95,7 @@ docker compose ps
 
 数据保存于命名卷 `simkeep_simkeep-data` 中的 `/app/data/simkeep.db`。容器重启和镜像更新会保留数据。使用单个 Web worker 和一个提醒调度进程。
 
-GitHub Actions 在推送 `main` 或 `v1.0.0` 这样的版本标签时自动构建并发布镜像，也支持手动触发。首次发布后，仓库维护者需将 GHCR 包设为 Public，其他人才能匿名拉取。详见 [Docker 部署、自动构建与恢复说明](docs/DOCKER.md)。
+GitHub Actions 在推送 `main` 或 `v1.0.0` 这样的版本标签时自动构建并发布镜像，也支持手动触发。详见 [Docker 部署、自动构建与恢复说明](docs/DOCKER.md)。
 
 ## 通知配置
 

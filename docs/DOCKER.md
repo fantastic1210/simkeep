@@ -55,7 +55,7 @@ docker compose up -d --build --wait
 
 在仓库的 **Actions → Docker image** 查看构建结果，或点击 **Run workflow** 手动运行。仓库需启用 GitHub Actions；工作流已经声明 `contents: read` 和 `packages: write` 权限。
 
-**首次发布后**，GHCR 包默认为 Private，即使源码仓库是公开的。维护者打开 [SIMKEEP 的包设置](https://github.com/users/rest-rain/packages/container/simkeep/settings)，在 **Change visibility** 中改为 **Public**，即可匿名拉取。构建成功前包设置页面可能尚不存在。拉取提示 `denied` 时，先确认工作流已成功及包的可见性。
+拉取提示 `denied` 时，先确认工作流已成功及包的可见性。新建 GHCR 包可能为 Private，公开源码仓库也不保证包可匿名拉取。维护者可打开 [SIMKEEP 的包设置](https://github.com/users/rest-rain/packages/container/simkeep/settings)，在 **Change visibility** 中改为 **Public**。构建成功前包设置页面可能尚不存在。
 
 构建只读取 `.dockerignore` 允许的应用文件，不传入服务器 `.env`、数据库或通知密钥。镜像内附带 MIT LICENSE。
 
