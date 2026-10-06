@@ -60,34 +60,30 @@ SIMKEEP 是一个可自行部署的 SIM / eSIM 管理平台。把开通日期、
 
 需要 Docker Engine 和 Docker Compose 插件。可直接使用 GHCR 镜像，支持 `amd64` / `arm64`，服务器无需安装 Node.js 或 Python。
 
-下载仓库并进入项目目录后执行：
+将 [docker-compose.yml](docker-compose.yml) 和 [.env.example](.env.example) 下载到同一目录，进入该目录后执行：
 
 ```bash
-cp .env.example .env
+test -f .env || cp .env.example .env
 chmod 600 .env
 ```
 
-编辑 `.env`，把 `SIMKEEP_PUBLIC_URL` 改成自己的访问地址，例如 `http://your-server:5180`，并设置镜像：
+编辑 `.env`，把 `SIMKEEP_PUBLIC_URL` 改成自己的访问地址，例如 `http://your-server:5180`。本机试用可保留 `http://localhost:5180`。
 
-```dotenv
-SIMKEEP_IMAGE=ghcr.io/rest-rain/simkeep:latest
-```
-
-本机试用可保留 `http://localhost:5180`。`latest` 对应 `main` 的最新构建；需要固定版本时使用对应版本标签。
+默认镜像为 `ghcr.io/rest-rain/simkeep:latest`，由 GitHub Actions 自动构建。`latest` 对应 `main` 的最新构建；需要固定版本时修改 `.env` 中的 `SIMKEEP_IMAGE`，使用已发布的版本标签。
 
 ```bash
 docker compose pull web
-docker compose up -d --no-build --wait web
+docker compose up -d --wait web
 docker compose ps
 ```
 
 打开 `http://localhost:5180` 或设置的服务器地址，点击“创建账号”。没有预置管理员、初始密码或演示资料。
 
-也可从源码构建：在 `.env` 中设置 `SIMKEEP_IMAGE=simkeep:local`，然后执行 `docker compose up -d --build --wait`。
+Docker Compose 会自动读取 `docker-compose.yml`。也可从源码构建，详见 [源码构建说明](docs/DOCKER.md#从源码构建)。
 
 | 配置项 | 默认值 | 用途 |
 | --- | --- | --- |
-| `SIMKEEP_IMAGE` | `simkeep:local` | 镜像名称；使用 GHCR 镜像时填写上面的地址 |
+| `SIMKEEP_IMAGE` | `ghcr.io/rest-rain/simkeep:latest` | 自动构建镜像；可改为已发布的版本标签 |
 | `SIMKEEP_PUBLIC_URL` | `http://localhost:5180` | 网页访问地址和提醒中的链接 |
 | `SIMKEEP_PORT` | `5180` | 宿主机端口；修改时同步调整访问地址 |
 | `SIMKEEP_BIND_ADDRESS` | `0.0.0.0` | 宿主机监听地址 |
@@ -140,15 +136,15 @@ docker compose cp web:/app/data/backups ./docker-backups
 
 ```bash
 docker compose pull web
-docker compose up -d --no-build --wait web
+docker compose up -d --wait web
 ```
 
-使用源码构建时，更新代码后执行 `docker compose up -d --build --wait`。
+如果旧 `.env` 设置了 `SIMKEEP_IMAGE=simkeep:local`，先改为 `ghcr.io/rest-rain/simkeep:latest`，再执行上述命令。使用源码镜像时，更新代码后先执行 `docker build -t simkeep:local .`，再执行 `docker compose up -d --wait web`。
 
 修改 `.env` 后，需要重建容器加载新环境变量：
 
 ```bash
-docker compose up -d --no-build --force-recreate --wait web
+docker compose up -d --force-recreate --wait web
 ```
 
 `docker compose restart` 不会加载修改后的 `.env`。不要执行 `docker compose down -v`，它会删除数据卷。

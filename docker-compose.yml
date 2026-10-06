@@ -1,8 +1,7 @@
 name: simkeep
 services:
   web:
-    image: ${SIMKEEP_IMAGE:-simkeep:local}
-    build: .
+    image: ${SIMKEEP_IMAGE:-ghcr.io/rest-rain/simkeep:latest}
     init: true
     restart: unless-stopped
     stop_grace_period: 30s
