@@ -60,6 +60,20 @@ SIMKEEP 是一个可自行部署的 SIM / eSIM 管理平台。把开通日期、
 
 需要 Docker Engine 和 Docker Compose 插件。可直接使用 GHCR 镜像，支持 `amd64` / `arm64`，服务器无需安装 Node.js 或 Python。
 
+### 一键部署
+
+服务器已安装 Docker、Compose 插件和 curl 后，执行：
+
+```bash
+bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/rest-rain/simkeep/main/install.sh | bash'
+```
+
+脚本默认部署到当前目录下的 `simkeep` 文件夹，首次运行询问端口和 HTTP 访问地址，下载配置并启动镜像。打开显示的地址后创建账号。
+
+再次从同一目录执行相同命令会保留已有 `.env`、`docker-compose.yml` 和数据卷，拉取镜像并更新容器。指定目录、无人值守部署等用法见 [一键部署说明](docs/DOCKER.md#一键部署)。
+
+### 手动部署
+
 将 [docker-compose.yml](docker-compose.yml) 和 [.env.example](.env.example) 下载到同一目录，进入该目录后执行：
 
 ```bash

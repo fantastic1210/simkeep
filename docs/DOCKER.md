@@ -2,6 +2,28 @@
 
 需要 Docker Engine 与 Docker Compose 插件。预构建镜像包含前端与后端，支持 `linux/amd64` 和 `linux/arm64`，不需要宿主机安装 Node.js、npm 或 Python。应用使用单个 Uvicorn worker，后台续期提醒与 Web 同时启动。
 
+## 一键部署
+
+准备好 Docker Engine、Compose 插件及 curl，在服务器执行：
+
+```bash
+bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/rest-rain/simkeep/main/install.sh | bash'
+```
+
+首次运行会询问宿主机端口和 HTTP 访问地址。远程部署时填写例如 `http://服务器IP:5180` 的地址；本机试用可直接回车。默认部署目录为当前目录下的 `simkeep`，镜像为 `ghcr.io/rest-rain/simkeep:latest`。Docker 需要已启动，当前用户需能执行 `docker info`。
+
+脚本下载缺少的配置文件，创建权限为 `600` 的 `.env`，验证 Compose 配置、拉取镜像并等待健康检查。成功后显示配置目录和访问提示；登录网页后，每个人在“通知设置”配置自己的 Telegram / SMTP。
+
+再次从同一目录执行相同命令，会使用已有配置更新镜像与容器。已有 `.env` 和 `docker-compose.yml` 保留，数据继续使用原命名卷。需要修改地址、端口或固定镜像版本时，编辑部署目录中的 `.env` 再运行。
+
+也可指定部署目录及首次配置，供无人值守部署使用：
+
+```bash
+bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/rest-rain/simkeep/main/install.sh | bash -s -- --dir ./simkeep --port 5180 --url http://your-server:5180 --non-interactive'
+```
+
+`--port`、`--url` 仅用于首次创建 `.env`；已有配置时按文件内容部署。重复执行时使用同一个 `--dir`。没有交互终端且未提供参数时，默认使用端口 `5180` 和 `http://localhost:5180`；远程部署请填写实际地址。
+
 ## 在新服务器部署
 
 部署只需要 `docker-compose.yml` 和 `.env`。可下载配置文件及空白模板：
