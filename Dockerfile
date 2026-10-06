@@ -7,7 +7,7 @@ RUN python scripts/build.py
 FROM python:3.12-slim AS runtime
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 SIMKEEP_DB=/app/data/simkeep.db SIMKEEP_STATIC_DIR=/app/dist
-COPY requirements.txt .
+COPY requirements.txt LICENSE ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY server ./server
 COPY scripts/backup.py scripts/restore.py ./scripts/

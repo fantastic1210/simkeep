@@ -1,10 +1,10 @@
 # Docker Compose 部署
 
-需要 Docker Engine 与 Docker Compose 插件。镜像构建会自动打包前端，不需要宿主机安装 Node.js、npm 或 Python。应用使用单个 Uvicorn worker，后台续期提醒与 Web 同时启动。
+需要 Docker Engine 与 Docker Compose 插件。预构建镜像包含前端与后端，支持 `linux/amd64` 和 `linux/arm64`，不需要宿主机安装 Node.js、npm 或 Python。应用使用单个 Uvicorn worker，后台续期提醒与 Web 同时启动。
 
 ## 在新服务器部署
 
-进入包含 Dockerfile 和 compose.yml 的 simkeep 目录，准备配置：
+进入仓库目录，准备配置；使用预构建镜像时只需 `compose.yml`、`.env.example` 和自己的 `.env`：
 
 ```bash
 test -f .env || cp .env.example .env
@@ -13,8 +13,15 @@ chmod 600 .env
 
 编辑 `.env`，将 `SIMKEEP_PUBLIC_URL` 改为实际访问地址，例如 `http://服务器IP:5180`。`SIMKEEP_PORT` 控制宿主机端口，默认 5180；改端口时同步修改公网地址。保持 HTTP 时使用 `SIMKEEP_SECURE_COOKIES=0`。每个用户登录网页的“通知设置”，点击“配置 Telegram / 配置邮件”保存自己的凭据；不需要修改 `.env` 或重启。`.env` 中的通知凭据仅作为可选公共默认服务。
 
+在 `.env` 中将镜像改为：
+
+```dotenv
+SIMKEEP_IMAGE=ghcr.io/rest-rain/simkeep:latest
+```
+
 ```bash
-docker compose up -d --build --wait
+docker compose pull web
+docker compose up -d --no-build --wait web
 docker compose ps
 ```
 
@@ -22,18 +29,51 @@ docker compose ps
 
 默认 Compose 项目名为 `simkeep`，持久化卷为 `simkeep_simkeep-data`，数据库位于容器 `/app/data/simkeep.db`。保持项目名即可复用同一个卷。容器重启、镜像更新及普通 `docker compose down` 都会保留卷；`docker compose down -v` 会删除数据卷。
 
-## 更新、配置与日志
+### 从源码构建
 
-更新代码并重新构建镜像：
+需要完整仓库。在 `.env` 中设置 `SIMKEEP_IMAGE=simkeep:local`，然后执行：
 
 ```bash
 docker compose up -d --build --wait
 ```
 
+构建时自动打包前端，宿主机同样无需安装应用依赖。
+
+## GitHub 自动构建镜像
+
+工作流位于 [docker-image.yml](../.github/workflows/docker-image.yml)，镜像发布到 `ghcr.io/rest-rain/simkeep`，同时构建 `amd64` 与 `arm64`。发布使用 GitHub 自动提供的 `GITHUB_TOKEN`，无需配置 Docker Hub 账号或额外的访问令牌。
+
+| 触发方式 | 发布标签 |
+| --- | --- |
+| 推送 `main` | `latest`、`main`、`sha-提交短编号` |
+| 推送版本标签，例如 `v1.2.3` | `1.2.3`、`1.2`、`sha-提交短编号` |
+| 推送预发布标签，例如 `v1.2.3-rc.1` | `1.2.3-rc.1`、`sha-提交短编号` |
+| 在 Actions 中手动运行 | 所选分支或版本对应的标签 |
+| 向 `main` 提交 Pull Request | 仅验证构建，不发布 |
+
+`latest` 只随 `main` 更新。使用正式版本标签部署时，例如设置 `SIMKEEP_IMAGE=ghcr.io/rest-rain/simkeep:1.2.3`，可避免跟随开发分支更新。
+
+在仓库的 **Actions → Docker image** 查看构建结果，或点击 **Run workflow** 手动运行。仓库需启用 GitHub Actions；工作流已经声明 `contents: read` 和 `packages: write` 权限。
+
+**首次发布后**，GHCR 包默认为 Private，即使源码仓库是公开的。维护者打开 [SIMKEEP 的包设置](https://github.com/users/rest-rain/packages/container/simkeep/settings)，在 **Change visibility** 中改为 **Public**，即可匿名拉取。构建成功前包设置页面可能尚不存在。拉取提示 `denied` 时，先确认工作流已成功及包的可见性。
+
+构建只读取 `.dockerignore` 允许的应用文件，不传入服务器 `.env`、数据库或通知密钥。镜像内附带 MIT LICENSE。
+
+## 更新、配置与日志
+
+使用预构建镜像时：
+
+```bash
+docker compose pull web
+docker compose up -d --no-build --wait web
+```
+
+使用源码镜像时，更新代码后执行 `docker compose up -d --build --wait`。更新镜像会重建容器，数据仍保存在原命名卷中。
+
 修改 `.env` 后重建容器加载新配置：
 
 ```bash
-docker compose up -d --force-recreate --wait web
+docker compose up -d --no-build --force-recreate --wait web
 ```
 
 仅执行 `docker compose restart` 不会加载修改后的环境配置。日常查看或重启：
@@ -64,7 +104,7 @@ docker compose cp web:/app/data/backups ./docker-backups
 ```bash
 docker compose stop web
 docker compose run --rm --no-deps -T --entrypoint python web scripts/restore.py --replace < restore.db
-docker compose up -d --wait
+docker compose up -d --no-build --wait web
 ```
 
 恢复容器以应用用户读取标准输入，不需要 root 或修改宿主机备份权限。它检查数据库完整性与 SIMKEEP 表结构，临时生成恢复库后替换；未传 --replace 时会拒绝覆盖现有库。恢复容器只执行数据库操作，不启动提醒进程。使用 `docker compose -p 其他项目名` 时，以上所有命令也须带相同项目名。
