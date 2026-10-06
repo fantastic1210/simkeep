@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-labelledby="title desc">
+  <title id="title">SIMKEEP · 续卡</title>
+  <desc id="desc">记住每张卡的下一次续期。SIM 与 eSIM 管理，余额、续期与提醒。</desc>
+  <rect width="1200" height="280" rx="18" fill="#f5f7fc"/>
+  <g transform="translate(60 68)" fill="none" stroke="#5360ea" stroke-width="4" stroke-linejoin="round">
+    <path d="M12 0h78l30 30v104a10 10 0 0 1-10 10H12a10 10 0 0 1-10-10V10A10 10 0 0 1 12 0Z" fill="#fff"/>
+    <rect x="30" y="64" width="64" height="44" rx="7" fill="#eff1ff"/>
+    <path d="M62 64v44m-32-22h64" stroke-width="2"/>
+    <path d="m83 19-11 18h14L77 53" stroke-width="3"/>
+  </g>
+  <g font-family="'Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="222" y="114" font-size="48" font-weight="700" fill="#20283e">SIMKEEP <tspan font-size="30" font-weight="500">续卡</tspan></text>
+    <text x="225" y="159" font-size="23" fill="#20283e">记住每张卡的下一次续期。</text>
+    <text x="225" y="204" font-size="16" fill="#77839a">SIM / eSIM 管理 · 多币种余额 · Telegram 与邮件提醒</text>
+  </g>
+  <g transform="translate(845 72)" font-family="'Noto Sans CJK SC','PingFang SC','Microsoft YaHei',sans-serif">
+    <path d="M10 15v117" fill="none" stroke="#d6dcf0" stroke-width="2"/>
+    <circle cx="10" cy="15" r="7" fill="#168576"/>
+    <circle cx="10" cy="74" r="7" fill="#5360ea"/>
+    <circle cx="10" cy="133" r="7" fill="#f5f7fc" stroke="#9ca7c3" stroke-width="2"/>
+    <text x="35" y="21" font-size="17" fill="#20283e">记录开通</text>
+    <text x="35" y="80" font-size="17" fill="#20283e">安排续期</text>
+    <text x="35" y="139" font-size="17" fill="#20283e">准时提醒</text>
+  </g>
+</svg>

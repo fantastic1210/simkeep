@@ -1,0 +1,36 @@
+name: simkeep
+services:
+  web:
+    image: ${SIMKEEP_IMAGE:-simkeep:local}
+    build: .
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 30s
+    env_file: ${SIMKEEP_ENV_FILE:-.env}
+    environment:
+      SIMKEEP_DB: /app/data/simkeep.db
+      SIMKEEP_STATIC_DIR: /app/dist
+    ports:
+      - "${SIMKEEP_BIND_ADDRESS:-0.0.0.0}:${SIMKEEP_PORT:-5180}:5180"
+    volumes:
+      - simkeep-data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=32m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5180/api/health',timeout=5)"]
+      interval: 10s
+      timeout: 6s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+volumes:
+  simkeep-data:

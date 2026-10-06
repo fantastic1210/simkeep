@@ -1,0 +1,17 @@
+*
+!Dockerfile
+!requirements.txt
+!index.html
+!style.css
+!app.js
+!api.js
+!core.js
+!money.js
+!countries.js
+!favicon.svg
+!server/
+!server/*.py
+!scripts/
+!scripts/build.py
+!scripts/backup.py
+!scripts/restore.py

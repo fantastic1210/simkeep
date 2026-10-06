@@ -1,0 +1,39 @@
+# Private runtime configuration (only the empty template is public).
+.env*
+*.env
+*.env.*
+!.env.example
+# Databases, backups and exports contain account and notification credentials.
+data/
+backups/
+docker-backups/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.sql
+*.backup
+*.bak
+simkeep-*.json
+# Generated builds, browser traces and local tooling.
+preview/
+dist/
+output/
+releases/
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.playwright-cli/
+*.log
+*.zip
+*.tar
+*.tar.gz
+.DS_Store
+.idea/
+.vscode/
+# Local files.
+.local/
